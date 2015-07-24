@@ -1,0 +1,10 @@
+---
+
+- name: gpu driver
+  gather_facts: False
+  hosts:
+   - gpunodes
+   - gpost01
+  user: root
+  roles:
+    - gpu
