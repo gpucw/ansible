@@ -1,0 +1,18 @@
+---
+
+- name: ldap client installation
+  gather_facts: False
+  hosts:
+    - headnodes
+    - nodes
+    - postprocess
+  roles:
+    - role: ldap_client 
+      #ldap_server variable must be defined in the inventory, defaults to  ldap.cyi.ac.cy
+      #ldap_server_secondary can  be defined in the inventory
+      ldap_base_dn: "dc=cyi,dc=ac,dc=cy"
+      ldap_resource: "{{ ldap_resource_name }}"
+      ldap_ssl: "no" 
+#      home_dir_base: "{{ home_dir_base }}" 
+
+
