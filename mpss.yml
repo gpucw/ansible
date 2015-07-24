@@ -1,0 +1,7 @@
+---
+
+- hosts:
+   - phinodes
+  roles:
+    - { role: mpss }
+
