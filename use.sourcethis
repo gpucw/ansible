@@ -1,0 +1,18 @@
+#!/bin/bash
+
+inv=$1
+
+if [ ! -f inventories/$1 ]; then # inventory does not exist
+  echo -e "\033[1;31mInventory file inventories/$1 not found.\033[0m"
+  inv="NOT FOUND"
+  PS1="[\u@\h \W]\$"
+else # inventory exists
+  alias ansible="ansible -i `pwd`/inventories/$1"
+  alias ansible-playbook="ansible-playbook -i `pwd`/inventories/$1"
+  alias pssh='pssh -H "$(ansible --list-hosts all)" -i'
+  echo -n "using hosts: "
+  echo -e "\e[36m"
+  ansible  -i `pwd`/inventories/$1 --list-hosts all|xargs
+  echo -e "\e[0m"
+  PS1="[\u@\h \W](\[\e[1;32m\]$inv\[\e[0m\])\$ "
+fi
