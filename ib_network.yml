@@ -1,0 +1,17 @@
+---
+
+- hosts:
+   - all
+  roles:
+    - { role: ofed, when: ib_addr is defined }
+    - role: network
+      network_ether_interfaces:
+       - device: ib0
+         bootproto: static
+         address: "{{ ib_addr }}"
+         netmask: 255.255.0.0
+         prefix: 16
+         connected_mode: Yes
+      when: ib_addr is defined
+
+
