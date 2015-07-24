@@ -1,0 +1,62 @@
+- hosts:
+    - all
+  tasks:
+    - lineinfile: dest=/etc/resolv.conf regexp=nameserver line="nameserver {{ gateway }}"
+      when: vlan110_addr is not defined
+    - lineinfile: dest=/etc/resolv.conf regexp=nameserver line="nameserver 10.20.30.10"
+      when: vlan110_addr is defined
+    - lineinfile: dest=/etc/sysconfig/network regexp=GATEWAY line="GATEWAY=10.20.110.254"
+      when: vlan110_addr is defined
+    - lineinfile: dest=/etc/sysconfig/network regexp=GATEWAY line="GATEWAY={{ gateway }}"
+      when: mgmt_addr is defined and  vlan110_addr is not defined
+
+- hosts:
+   - all
+  roles:
+    - role: network
+      network_ether_interfaces:
+       - device: "{{ external_if }}"
+         bootproto: static
+         address: "{{ vlan110_addr }}"
+         netmask: 255.255.255.0
+      when: vlan110_addr is defined
+
+- hosts:
+   - all:!phinodes
+  roles:
+    - role: network
+      network_ether_interfaces:
+       - device: "{{ mgmt_if }}"
+         bootproto: static
+         address: "{{ mgmt_addr }}"
+         netmask: 255.255.0.0
+      when: mgmt_addr is defined
+
+- hosts:
+    - phinodes
+  roles:
+    - role: network
+      network_bridge_interfaces:
+        - device: br0
+          type: bridge
+          address: "{{ mgmt_addr }}"
+          netmask: 255.255.0.0
+          bootproto: static
+          stp: "on"
+          ports: 
+           - "{{ mgmt_if }}"
+      when: mgmt_addr is defined
+
+- hosts:
+   - all
+  tasks:
+   - name: Check if "{{ external_if }}" is configured
+     stat: path=/etc/sysconfig/network-scripts/ifcfg-"{{ external_if }}"
+     register: p
+   - name: disable "{{ external_if }}"
+     shell: /sbin/ifdown "{{ external_if }}" ; /bin/rm -f /etc/sysconfig/network-scripts/ifcfg-"{{ external_if }}"
+     when: vlan110_addr is not defined and p.stat.exists
+   - shell: route add default gw "{{ gateway }}"
+     when: mgmt_addr is defined and  vlan110_addr is not defined
+     failed_when: False
+     changed_when: False
