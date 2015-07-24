@@ -1,0 +1,7 @@
+- hosts: headnodes
+  roles:
+  - role: ldap_server
+    openldap_server_domain_name: cyi.ac.cy
+    openldap_server_rootpw: password
+    openldap_server_enable_ssl: false
+    openldap_server_base: "dc=cyi,dc=ac,dc=cy"
