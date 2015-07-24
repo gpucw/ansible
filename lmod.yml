@@ -1,0 +1,11 @@
+---
+
+- name: install lmod
+  gather_facts: False
+  hosts:
+   - headnodes
+   - nodes
+   - postprocess 
+  user: root
+  roles:
+    - lmod
