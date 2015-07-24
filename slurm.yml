@@ -1,0 +1,21 @@
+---
+
+- name: Slurm Installation
+  hosts: 
+    - headnodes 
+    - nodes
+  roles:
+    - slurm
+
+- name: Slurm Accounting Installation
+  hosts:
+    - accounting
+  roles:
+    - slurm_acct
+
+- name: Start slurm service
+  hosts:
+    - headnodes
+    - nodes
+  tasks:
+    - service: name=slurm state=started
