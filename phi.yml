@@ -1,0 +1,21 @@
+---
+- include: network.yml
+- include: common.yml
+- include: gpu.yml
+- include: mpss.yml
+- include: ib_network.yml
+- include: ldap_server.yml
+- include: ldap_client.yml
+#- include: slurm.yml
+#- include: icinga_server.yml
+#- include: icinga_client.yml
+- include: lmod.yml
+
+
+- hosts:
+   - all
+  tasks:
+    - name: mount nfs home
+      mount: name=/home src={{ nfs_home }} fstype=nfs state=mounted
+      when: "not 'headnodes' in group_names"
+
